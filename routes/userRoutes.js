@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Users = require("../schema/registerSchema");
 
+
 //Register User Api
 
 router.post("/signup", async (request, response) => {
@@ -80,11 +81,79 @@ router.get("/users", async (request, response) => {
   }
 });
 
+router.get("/:id", async (request, response) => {
+  const { id } = request.params;
+  try {
+    const getUserQuery = await Users.findById(id);
+    if (getUserQuery === null) {
+      response.status(404).json({
+        Message: "The ID Which You Have Provided Is Not Found With User ID",
+      });
+    } else {
+      response.status(200).json({ getUserQuery });
+    }
+  } catch (error) {
+    response.status(500);
+    response.send("Internal Server Error");
+    console.log(error);
+  }
+});
+
 router.put("/updatepassword", async (request, response) => {
   const { email, password } = request.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
   try {
-    const getUserQuery = await Users.find({ email: email });
-    response.send(getUserQuery);
+    const getUserQuery = await Users.findOne({ email: email });
+    if (getUserQuery === null) {
+      response.status(404).json({
+        Message: "The ID Which You Have Provided Is Not Found With Tutorial ID",
+      });
+    } else {
+      getUserQuery.password = hashedPassword;
+      await getUserQuery.save();
+      response.send("Updated Successfully");
+    }
+  } catch (error) {
+    response.status(500).send("Internal Server Error");
+    console.log(error);
+  }
+});
+
+router.put("/forgotpassword", async (request, response) => {
+  const { email, password } = request.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    const getUserQuery = await Users.findOne({ email: email });
+    if (getUserQuery === null) {
+      response.status(404).json({
+        Message: "The ID Which You Have Provided Is Not Found With Tutorial ID",
+      });
+    } else {
+      getUserQuery.password = hashedPassword;
+      await getUserQuery.save();
+      response.send("Updated Successfully");
+    }
+  } catch (error) {
+    response.status(500).send("Internal Server Error");
+    console.log(error);
+  }
+});
+
+router.delete("/:id", async (request, response) => {
+  const { id } = request.params;
+  try {
+    const checkUserQuery = await Users.findById(id);
+    if (checkUserQuery === null) {
+      response.status(404).json({
+        Message: "The ID Which You Have Provided Is Not Found With User ID",
+      });
+    } else {
+      const deleteUserQuery = await Users.findByIdAndRemove(id);
+      response.status(200).json({
+        Message: "User Deleted Successfully",
+        DeletedMovie: deleteUserQuery,
+      });
+    }
   } catch (error) {
     response.status(500);
     response.send("Internal Server Error");

@@ -1,9 +1,31 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 const Tutorial = require("../schema/tutorialSchema");
 
-router.post("/addvideo", async (request, response) => {
+const verifyAccessToken = (request, response, next) => {
+  let jwtToken = null;
+  const header = request.headers["authorization"];
+  if (header !== undefined) {
+    jwtToken = header.split(" ")[1];
+  }
+  if (jwtToken === undefined) {
+    response.status(401);
+    response.send("Invalid Access Token");
+  } else {
+    jwt.verify(jwtToken, "AccessToken", async (error, playLoad) => {
+      if (error) {
+        response.status(401);
+        response.send("Invalid Access Token");
+      } else {
+        next();
+      }
+    });
+  }
+};
+
+router.post("/addvideo", verifyAccessToken, async (request, response) => {
   try {
     const {
       video_name,
@@ -37,10 +59,10 @@ router.post("/addvideo", async (request, response) => {
   }
 });
 
-router.get("/", async (request, response) => {
+router.get("/videos", verifyAccessToken, async (request, response) => {
   try {
     const getAllVideosQuery = await Tutorial.find();
-    response.status(200).json(getAllVideosQuery);
+    response.status(200).json({ getAllVideosQuery });
   } catch (error) {
     response.status(500);
     response.send("Internal Server Error");
@@ -48,7 +70,7 @@ router.get("/", async (request, response) => {
   }
 });
 
-router.get("/:id", async (request, response) => {
+router.get("/:id", verifyAccessToken, async (request, response) => {
   const { id } = request.params;
   console.log(id);
   try {
@@ -58,7 +80,7 @@ router.get("/:id", async (request, response) => {
         Message: "The ID Which You Have Provided Is Not Found With Tutorial ID",
       });
     } else {
-      response.status(200).json({ getVideo });
+      response.status(200).json({ getVideoQuery });
     }
   } catch (error) {
     response.status(500);
@@ -67,7 +89,7 @@ router.get("/:id", async (request, response) => {
   }
 });
 
-router.put("/:id", async (request, response) => {
+router.put("/:id", verifyAccessToken, async (request, response) => {
   const { id } = request.params;
   const updatedItem = request.body;
 
@@ -94,7 +116,7 @@ router.put("/:id", async (request, response) => {
   }
 });
 
-router.delete("/:id", async (request, response) => {
+router.delete("/:id", verifyAccessToken, async (request, response) => {
   const { id } = request.params;
   try {
     const checkVideoQuery = await Tutorial.findById(id);
