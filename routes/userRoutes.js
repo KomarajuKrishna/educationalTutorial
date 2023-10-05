@@ -40,9 +40,6 @@ router.post("/signin", async (request, response) => {
   const { email, password } = request.body;
   try {
     const checkEmail = await Users.find({ email: email });
-    // console.log(checkEmail);
-    // console.log(checkEmail[0].password);
-    // response.send("login Successful");
     if (checkEmail.length !== 0) {
       const verifyPassword = await bcrypt.compare(
         password,
@@ -70,6 +67,8 @@ router.post("/signin", async (request, response) => {
   }
 });
 
+//Get All Users Api
+
 router.get("/users", async (request, response) => {
   try {
     const getAllUsersQuery = await Users.find();
@@ -80,6 +79,8 @@ router.get("/users", async (request, response) => {
     console.log(error);
   }
 });
+
+//Get User By Id Api
 
 router.get("/:id", async (request, response) => {
   const { id } = request.params;
@@ -98,6 +99,8 @@ router.get("/:id", async (request, response) => {
     console.log(error);
   }
 });
+
+// Update User Password Api 
 
 router.put("/updatepassword", async (request, response) => {
   const { email, password } = request.body;
@@ -119,6 +122,8 @@ router.put("/updatepassword", async (request, response) => {
   }
 });
 
+//Forgot User Password Api 
+
 router.put("/forgotpassword", async (request, response) => {
   const { email, password } = request.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -138,6 +143,8 @@ router.put("/forgotpassword", async (request, response) => {
     console.log(error);
   }
 });
+
+//Delete User By Id Api
 
 router.delete("/:id", async (request, response) => {
   const { id } = request.params;

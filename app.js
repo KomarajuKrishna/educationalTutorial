@@ -32,9 +32,13 @@ const connectToDatabase = async () => {
 
 connectToDatabase();
 
+//Start The Server
+
 app.listen(port, () => {
   console.log(`Server is Running at: http://localhost:${port}`);
 });
+
+//API's MiddleWare
 
 app.use("/", userRouters);
 app.use("/tutorial", tutorialRouters);

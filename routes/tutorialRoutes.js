@@ -4,6 +4,8 @@ const router = express.Router();
 
 const Tutorial = require("../schema/tutorialSchema");
 
+//Custom MiddleWare
+
 const verifyAccessToken = (request, response, next) => {
   let jwtToken = null;
   const header = request.headers["authorization"];
@@ -24,6 +26,8 @@ const verifyAccessToken = (request, response, next) => {
     });
   }
 };
+
+//Post A New Video Api
 
 router.post("/addvideo", verifyAccessToken, async (request, response) => {
   try {
@@ -59,6 +63,8 @@ router.post("/addvideo", verifyAccessToken, async (request, response) => {
   }
 });
 
+//Get All Videos Api
+
 router.get("/videos", verifyAccessToken, async (request, response) => {
   try {
     const getAllVideosQuery = await Tutorial.find();
@@ -69,6 +75,8 @@ router.get("/videos", verifyAccessToken, async (request, response) => {
     console.log(error);
   }
 });
+
+//Get Video By Id Api
 
 router.get("/:id", verifyAccessToken, async (request, response) => {
   const { id } = request.params;
@@ -88,6 +96,8 @@ router.get("/:id", verifyAccessToken, async (request, response) => {
     console.log(error);
   }
 });
+
+//Update Video By Id Api
 
 router.put("/:id", verifyAccessToken, async (request, response) => {
   const { id } = request.params;
@@ -115,6 +125,8 @@ router.put("/:id", verifyAccessToken, async (request, response) => {
     console.log(error);
   }
 });
+
+//Delete Video By Id Api
 
 router.delete("/:id", verifyAccessToken, async (request, response) => {
   const { id } = request.params;
