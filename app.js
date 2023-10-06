@@ -36,12 +36,12 @@ connectToDatabase();
 
 //Start The Server
 
-app.get('/status', (req, res) => res.send({status: "I'm up and running"}));
-app.listen(port, () => console.log(`Dockerized Nodejs Applications is listening on port ${port}!`));
+// app.get('/status', (req, res) => res.send({status: "I'm up and running"}));
+// app.listen(port, () => console.log(`Dockerized Nodejs Applications is listening on port ${port}!`));
 
-// app.listen(port, () => {
-//   console.log(`Server is Running at: http://localhost:${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server is Running at: http://localhost:${port}`);
+});
 
 //API's MiddleWare
 
