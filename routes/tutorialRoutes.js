@@ -1,18 +1,21 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
+const Redis = require("ioredis");
+const redisClient = new Redis();
 
 const Tutorial = require("../schema/tutorialSchema");
 
 //Custom MiddleWare
 
-const verifyAccessToken = (request, response, next) => {
-  let jwtToken = null;
-  const header = request.headers["authorization"];
-  if (header !== undefined) {
-    jwtToken = header.split(" ")[1];
-  }
-  if (jwtToken === undefined) {
+const verifyAccessToken = async (request, response, next) => {
+  let jwtToken = await redisClient.get("authorizationToken");
+  console.log(jwtToken);
+  // const header = request.headers["authorization"];
+  // if (header !== undefined) {
+  //   jwtToken = header.split(" ")[1];
+  // }
+  if (jwtToken === null) {
     response.status(401);
     response.send("Invalid Access Token");
   } else {

@@ -2,7 +2,11 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Redis = require("ioredis");
+const redisClient = new Redis();
 const Users = require("../schema/registerSchema");
+
+const DEFAULT_EXPIRATION = 3600;
 
 
 //Register User Api
@@ -51,6 +55,12 @@ router.post("/signin", async (request, response) => {
           email: email,
         };
         const jwtToken = jwt.sign(playLoad, "AccessToken");
+                await redisClient.set(
+                  "authorizationToken",
+                  jwtToken,
+                  "EX",
+                  DEFAULT_EXPIRATION
+                );
         response.send({ jwtToken });
       } else {
         response.status(400);
@@ -158,7 +168,7 @@ router.delete("/:id", async (request, response) => {
       const deleteUserQuery = await Users.findByIdAndRemove(id);
       response.status(200).json({
         Message: "User Deleted Successfully",
-        DeletedMovie: deleteUserQuery,
+        DeletedUser: deleteUserQuery,
       });
     }
   } catch (error) {

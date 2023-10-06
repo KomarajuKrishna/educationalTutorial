@@ -2,9 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 const userRouters = require("./routes/userRoutes");
 const tutorialRouters = require("./routes/tutorialRoutes");
+const Tutorial = require("./schema/tutorialSchema");
 
 const app = express();
 app.use(bodyParser.json());
@@ -34,9 +36,12 @@ connectToDatabase();
 
 //Start The Server
 
-app.listen(port, () => {
-  console.log(`Server is Running at: http://localhost:${port}`);
-});
+app.get('/status', (req, res) => res.send({status: "I'm up and running"}));
+app.listen(port, () => console.log(`Dockerized Nodejs Applications is listening on port ${port}!`));
+
+// app.listen(port, () => {
+//   console.log(`Server is Running at: http://localhost:${port}`);
+// });
 
 //API's MiddleWare
 
